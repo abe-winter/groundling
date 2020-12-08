@@ -6,16 +6,10 @@ from starlette.routing import Router
 from starlette.exceptions import HTTPException
 from starlette.authentication import requires
 from starlette.responses import RedirectResponse, PlainTextResponse
-from . import util, middleware
+from . import util, middleware, conf
 from .util import tobytes
 from .clients import mixpanel_bg, send_email
 from .orm import select, update, insert
-
-# todo: move these to conf
-USE_MIXPANEL = False
-SITE_NAME = None
-FROM_ADDR = None
-HOME = None # name of home route
 
 app = Router()
 
@@ -28,8 +22,8 @@ async def login_helper(request, form):
     middleware.flash(request, "Bad password")
     return RedirectResponse(request.url_for('get_login'), status_code=302)
   request.session['userid'] = str(row['userid'])
-  bgtask = mixpanel_bg(request.session['userid'], 'login.email') if USE_MIXPANEL else None
-  return RedirectResponse(request.url_for(HOME), status_code=302, background=bgtask)
+  bgtask = mixpanel_bg(request.session['userid'], 'login.email') if conf.USE_MIXPANEL else None
+  return RedirectResponse(request.url_for(conf.HOME), status_code=302, background=bgtask)
 
 def check_password(password):
   if len(password) < 5:
@@ -52,8 +46,8 @@ async def join_helper(request, form):
     middleware.flash(request, "That email already has an account")
     return RedirectResponse(request.url_for('get_join'), status_code=302)
   request.session['userid'] = userid
-  bgtask = mixpanel_bg(request.session['userid'], 'join.email') if USE_MIXPANEL else None
-  return RedirectResponse(request.url_for(HOME), status_code=302, background=bgtask)
+  bgtask = mixpanel_bg(request.session['userid'], 'join.email') if conf.USE_MIXPANEL else None
+  return RedirectResponse(request.url_for(conf.HOME), status_code=302, background=bgtask)
 
 VERIFY_TEMPLATE = """<html><body>
   <h4>Thanks for joining {site_name}</h4>
@@ -71,13 +65,13 @@ async def send_verify(request):
     row = await select(con, "email from users", {'userid': request.user})
     await update(con, "users", {'verification_token': shortcode}, {'userid': request.user})
   await send_email(
-    row['email'], subject=f"Verify your {SITE_NAME} email",
-    body=VERIFY_TEMPLATE.format(url=request.url_for('re_verify', shortcode=shortcode)),
-    from_=FROM_ADDR,
+    row['email'], subject=f"Verify your {conf.SITE_NAME} email",
+    body=VERIFY_TEMPLATE.format(url=request.url_for('re_verify', shortcode=shortcode), site_name=conf.SITE_NAME),
+    from_=conf.VERIFY_FROM_ADDR,
   )
-  bgtask = mixpanel_bg(request.user, 'verify.start') if USE_MIXPANEL else None
+  bgtask = mixpanel_bg(request.user, 'verify.start') if conf.USE_MIXPANEL else None
   middleware.flash(request, "Verification email sent") # warning: this doesn't work because home.htm is SPA
-  return RedirectResponse(request.url_for(HOME), status_code=302, background=bgtask)
+  return RedirectResponse(request.url_for(conf.HOME), status_code=302, background=bgtask)
 
 @app.route('/verify/{shortcode}')
 async def re_verify(request):
@@ -90,9 +84,9 @@ async def re_verify(request):
     if 'userid' in request.session and str(row['userid']) != request.session['userid']:
       raise HTTPException(403, "You're redeeming a token for a different user. You can do this if you (1) log out or (2) use an incognito tab or different browser")
     await update(con, "users", {}, {'userid': row['userid']}, literals=['email_verified = now()'])
-  bgtask = mixpanel_bg(request.user, 'verify.ok') if USE_MIXPANEL else None
+  bgtask = mixpanel_bg(request.user, 'verify.ok') if conf.USE_MIXPANEL else None
   middleware.flash(request, 'Thanks for verifying your email!') # warning: this doesn't work because home.htm is SPA
   if 'userid' in request.session:
-    return RedirectResponse(request.url_for(HOME), background=bgtask)
+    return RedirectResponse(request.url_for(conf.HOME), background=bgtask)
   else:
     return PlainTextResponse("Thanks for verifying! Log in or go to a browser where you're logged in.")

@@ -5,7 +5,6 @@ from starlette.templating import Jinja2Templates
 from starlette.config import Config
 
 config = Config()
-DOMAIN = None # todo: move to conf
 templates = Jinja2Templates(directory='backend/templates') # todo: live on app instead?
 POOL = None
 

@@ -1,15 +1,12 @@
 import inspect, json, logging, os, sys, uuid
 import httpx
 from starlette.background import BackgroundTask
-
-# todo: move these to conf
-SERVICE_NAME = None
-DEFAULT_FROM_ADDR = None
+from . import conf
 
 def stackdriver_error(message):
   frame = inspect.stack()[1]
   sys.stderr.write(json.dumps({
-    "serviceContext": {"service": SERVICE_NAME},
+    "serviceContext": {"service": conf.SERVICE_NAME},
     "message": message,
     "@type": "type.googleapis.com/google.devtools.clouderrorreporting.v1beta1.ReportedErrorEvent",
     "context": {
@@ -49,7 +46,8 @@ async def send_mixpanel(userid, event):
 def mixpanel_bg(*args):
   return BackgroundTask(send_mixpanel, *args)
 
-async def send_email(dest, subject, body, from_=DEFAULT_FROM_ADDR):
+async def send_email(dest, subject, body, from_=None):
+  from_ = from_ or conf.DEFAULT_FROM_ADDR
   logging.debug('send_email %s %s', dest, subject)
   # todo: queue this instead
   if 'POSTMARK_TOKEN' not in os.environ:

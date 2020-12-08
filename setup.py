@@ -23,6 +23,7 @@ setup(
     'python-multipart==0.0.5',
     'itsdangerous==1.1.0',
     'ujson==4.0.1',
+    'jinja2==2.11.2',
   ],
   python_requires='>=3.6', # for format strings
   long_description=open(os.path.join(os.path.dirname(__file__), 'README.md')).read(),

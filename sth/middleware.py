@@ -1,7 +1,11 @@
 import os
 from aiofiles.os import stat as aio_stat
 from starlette.authentication import AuthenticationBackend, AuthCredentials
+from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 from starlette.staticfiles import StaticFiles
+from starlette.datastructures import Secret
+from . import conf, util
 
 def flash_middleware(request, call_next):
   request.state.flashm = request.session.pop('flashm', None)
@@ -31,4 +35,7 @@ class AuthBackend(AuthenticationBackend):
 
 def use_all(app):
   "register all middlewares on app, doubles as documentation for how to install the middlewares"
-  raise NotImplementedError
+  app.mount('/static', StaticFilesSym(directory=conf.STATIC_DIR), name='static')
+  app.add_middleware(AuthenticationMiddleware, backend=AuthBackend())
+  app.middleware("http")(flash_middleware)
+  app.add_middleware(SessionMiddleware, secret_key=util.config('SECRET_KEY', cast=Secret), https_only=not util.config('DEBUG', cast=bool, default=False))

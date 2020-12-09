@@ -39,6 +39,7 @@ def quick_norm(raw):
 async def startup():
   """invoke with `app.on_event("startup")(sth.util.startup)`"""
   # todo: figure out how to pass concurrency settings in database_url, otherwise settings
+  # pylint: disable=global-statement
   global POOL
   POOL = await asyncpg.create_pool(config('DATABASE_URL'), min_size=0, max_size=8)
   if os.environ.get('DEBUG') == '1':

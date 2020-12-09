@@ -11,3 +11,5 @@ This project exposes:
 * flash message
 * some json parser / serializer stuff for types
 * symlink-aware version of starlette's static files middleware to support frontend watch builds
+
+You **must** set `DEBUG=1` if you're not on https or else sessions won't work.

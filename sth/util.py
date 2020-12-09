@@ -1,4 +1,4 @@
-import uuid, re
+import uuid, re, logging, os
 from datetime import datetime, timedelta
 import asyncpg
 from starlette.templating import Jinja2Templates
@@ -35,3 +35,15 @@ def quick_norm(raw):
   "hack shortcut to normalize email because I think postmark is choking on the plus"
   user, _pluscode, domain = re.search(r'^([^\+]+)(\+.+)?@(.+)$', raw).groups()
   return f"{user}@{domain}"
+
+async def startup():
+  """invoke with `app.on_event("startup")(sth.util.startup)`"""
+  # todo: figure out how to pass concurrency settings in database_url, otherwise settings
+  global POOL
+  POOL = await asyncpg.create_pool(config('DATABASE_URL'), min_size=0, max_size=8)
+  if os.environ.get('DEBUG') == '1':
+    logging.basicConfig(level=logging.DEBUG)
+
+async def shutdown():
+  """invoke with `app.on_event("shutdown")(sth.util.shutdown)`"""
+  await POOL.close()

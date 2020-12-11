@@ -4,7 +4,7 @@
 import re, logging
 import asyncpg
 
-RE_OPERATOR = re.compile(r'[=<>]+')
+RE_OPERATOR = re.compile(r'([=<>]+|i?like)', re.I)
 
 def render_where_field(index, key):
   "assumes operator-less keys are intended to be =, leaves it alone if it has an operator, detects tails too for any($1) support"

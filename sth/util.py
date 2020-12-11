@@ -12,8 +12,8 @@ def parse_json_iso(raw):
   return datetime.fromisoformat(raw.rstrip('Z'))
 
 def ser_dates(dict_, **transform):
-  "prep date + uuid values for ser to json"
-  # todo: rename this; it's doing much more lifting now
+  "prep date + uuid values for ser to json, transform asyncpg Record to dict, apply custom transformations"
+  # todo: rename this, test it, doc it; it's doing much more lifting now
   if isinstance(dict_, asyncpg.Record):
     dict_ = dict(dict_)
   for key, val in dict_.items():

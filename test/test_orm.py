@@ -5,6 +5,10 @@ def test_operator_detection():
   assert orm.render_where_field(1, 'a =') == 'a = $1'
   assert orm.render_where_field(1, 'a <') == 'a < $1'
   assert orm.render_where_field(1, 'a >=') == 'a >= $1'
+  assert orm.render_where_field(1, 'a like') == 'a like $1'
+  assert orm.render_where_field(1, 'a ilike') == 'a ilike $1'
+  assert orm.render_where_field(1, 'a LIKE') == 'a LIKE $1'
+  assert orm.render_where_field(1, 'a like $') == 'a like $1'
   assert orm.render_where_field(1, 'a >= any($)') == 'a >= any($1)'
 
 def test_select():

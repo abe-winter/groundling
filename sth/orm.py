@@ -39,15 +39,16 @@ def select(con_or_pool, fields, where, fetch='fetchrow', where_literal=(), suffi
   args = format_select(fields, where, where_literal, suffix)
   return run_query(con_or_pool, fetch, args)
 
-def insert(con_or_pool, table, fields):
+def insert(con_or_pool, table, fields, suffix=''):
   "orm-light insert shortcut"
   # todo: optional literals
   subs = ','.join([f'${i + 1}' for i in range(len(fields))])
-  args = (f"insert into {table} ({','.join(fields)}) values ({subs})", *fields.values())
+  args = (f"insert into {table} ({','.join(fields)}) values ({subs}) " + suffix, *fields.values())
   logging.debug('insert %s', args)
   return run_query(con_or_pool, 'execute', args)
 
 def update(con_or_pool, table, fields, where, literals=None, suffix=None, method='execute'):
+  "literals here are set x=y, not where fields"
   # note: render_where_field below to support like {'x = $ + 1': val}, i.e. expressions right of operator
   set_stmts = [render_where_field(i + 1, field) for i, field in enumerate(fields)] + list(literals or ())
   query = f"update {table} set {', '.join(set_stmts)} where {format_whereclause(where, base_index=len(fields))} {suffix or ''}"

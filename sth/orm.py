@@ -23,7 +23,7 @@ def format_whereclause(where, where_literal=None, base_index=0):
 
 def format_select(fields, where, where_literal, suffix):
   "returns (query, params)"
-  return (f"select {fields} where {format_whereclause(where, where_literal)}{' ' + suffix if suffix else ''}", *where.values())
+  return (f"select {fields} {'where' if where or where_literal else ''} {format_whereclause(where, where_literal)}{' ' + suffix if suffix else ''}", *where.values())
 
 async def run_query(con_or_pool, method, args):
   "indirection that resolves method name (i.e. db.execute vs db.fetch) and supports pool as well as con"
@@ -37,6 +37,7 @@ def select(con_or_pool, fields, where, fetch='fetchrow', where_literal=(), suffi
   "orm-light: one-line wrapper for selecting a single row"
   # yes dictionary order is guaranteed in 3.7+ https://mail.python.org/pipermail/python-dev/2017-December/151283.html
   args = format_select(fields, where, where_literal, suffix)
+  logging.debug('select %s', args)
   return run_query(con_or_pool, fetch, args)
 
 def insert(con_or_pool, table, fields, suffix=''):

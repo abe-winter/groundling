@@ -24,6 +24,7 @@ def ser_dates(dict_, **transform):
     elif isinstance(val, timedelta):
       dict_[key] = val.total_seconds()
   for key, transformer in transform.items():
+    # todo: this should run before the default transforms above
     dict_[key] = transformer(dict_[key])
   return dict_
 

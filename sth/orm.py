@@ -40,11 +40,12 @@ def select(con_or_pool, fields, where, fetch='fetchrow', where_literal=(), suffi
   logging.debug('select %s', args)
   return run_query(con_or_pool, fetch, args)
 
-def insert(con_or_pool, table, fields, suffix=''):
+def insert(con_or_pool, table, fields, suffix='', literals={}):
   "orm-light insert shortcut"
   # todo: optional literals
-  subs = ','.join([f'${i + 1}' for i in range(len(fields))])
-  args = (f"insert into {table} ({','.join(fields)}) values ({subs}) " + suffix, *fields.values())
+  subs = ','.join([f'${i + 1}' for i in range(len(fields))] + list(literals.values()))
+  all_fields = (*fields, *literals)
+  args = (f"insert into {table} ({','.join(all_fields)}) values ({subs}) " + suffix, *fields.values())
   logging.debug('insert %s', args)
   return run_query(con_or_pool, 'execute', args)
 

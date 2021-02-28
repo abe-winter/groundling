@@ -1,8 +1,14 @@
-# sth - starlette helpers
+# groundling - starlette helpers and declarative routing
 
 Kitchen sink package for ramping up my small starlette projects.
 
-This project exposes:
+## Declarative routing
+
+In the declaroute module this has wrappers for declarative routing. They're verbose and not documented, and won't save you any lines of code, but they work.
+
+'declarative routing' means that path parameters and json body params are unpacked automatically into database queries, executed, and their results are returned.
+
+## Other stuff
 
 * a micro-orm on asyncpg
 * routes, helpers + middleware for user management / authentication

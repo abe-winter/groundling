@@ -28,6 +28,24 @@ def ser_dates(dict_, **transform):
     dict_[key] = transformer(dict_[key])
   return dict_
 
+def prep_serial(item):
+  "convert Record to something starlette can jsonify. will mutate inputs on the assumptions they're dicts we made"
+  # todo: similar function as ser_dates, pick one. also FastAPI does this out of the box, look into that
+  if isinstance(item, asyncpg.Record):
+    return prep_serial(dict(item))
+  elif isinstance(item, list):
+    return [prep_serial(elt) for elt in item]
+  elif isinstance(item, dict):
+    # note: mutating
+    for key, val in item.items():
+      if isinstance(val, uuid.UUID):
+        item[key] = str(val)
+      elif isinstance(val, datetime):
+        item[key] = val.isoformat()
+    return item
+  else:
+    return item
+
 def tobytes(raw):
   "helper to return bytes whether bytes or memoryview (postgres / sqlite)"
   return raw if isinstance(raw, bytes) else raw.tobytes()

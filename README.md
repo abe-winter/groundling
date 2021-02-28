@@ -8,6 +8,8 @@ In the declaroute module this has wrappers for declarative routing. They're verb
 
 'declarative routing' means that path parameters and json body params are unpacked automatically into database queries, executed, and their results are returned.
 
+There are no docs for this, but there are untested, possibly-wrong examples in `test_decl.py`. More TBD.
+
 ## Other stuff
 
 * a micro-orm on asyncpg

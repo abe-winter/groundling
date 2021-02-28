@@ -48,6 +48,8 @@ def mixpanel_bg(*args):
 
 async def send_email(dest, subject, body, from_=None):
   from_ = from_ or conf.DEFAULT_FROM_ADDR
+  if from_.endswith('@'):
+    from_ = from_ + conf.DOMAIN
   logging.debug('send_email %s %s', dest, subject)
   # todo: queue this instead
   if 'POSTMARK_TOKEN' not in os.environ:

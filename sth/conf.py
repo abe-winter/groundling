@@ -7,6 +7,7 @@ SERVICE_NAME = None # for stackdriver
 DEFAULT_FROM_ADDR = None # for sending emails
 VERIFY_FROM_ADDR = None # for sending email verification messages
 STATIC_DIR = 'backend/static' # path to static files
+DOMAIN = None # for email address formatting
 
 def init(params_dict):
   globals().update(params_dict)

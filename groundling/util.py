@@ -56,7 +56,7 @@ def quick_norm(raw):
   return f"{user}@{domain}"
 
 async def startup():
-  """invoke with `app.on_event("startup")(sth.util.startup)`"""
+  """invoke with `app.on_event("startup")(groundling.util.startup)`"""
   # todo: figure out how to pass concurrency settings in database_url, otherwise settings
   # pylint: disable=global-statement
   global POOL
@@ -65,5 +65,5 @@ async def startup():
     logging.basicConfig(level=logging.DEBUG)
 
 async def shutdown():
-  """invoke with `app.on_event("shutdown")(sth.util.shutdown)`"""
+  """invoke with `app.on_event("shutdown")(groundling.util.shutdown)`"""
   await POOL.close()

@@ -1,4 +1,4 @@
-from sth import orm
+from groundling import orm
 
 def test_operator_detection():
   assert orm.render_where_field(1, 'a') == 'a = $1'

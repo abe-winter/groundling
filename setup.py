@@ -3,16 +3,16 @@
 import os
 from distutils.core import setup
 from setuptools import find_packages
-from sth.version import __version__
+from groundling.version import __version__
 
 setup(
-  name='sth',
+  name='groundling',
   version= __version__,
   description="swiss army knife for (my) small starlette projects",
   author="Abe Winter",
-  author_email="awinter.public+sth@gmail.com",
-  url="https://github.com/abe-winter/sth",
-  packages=find_packages(include=['sth', 'sth.*']),
+  author_email="awinter.public+groundling@gmail.com",
+  url="https://github.com/abe-winter/groundling",
+  packages=find_packages(include=['groundling', 'groundling.*']),
   keywords=['starlette', 'swiss-army', 'auth', 'orm'],
   install_requires=[
     'asyncpg==0.21.0',

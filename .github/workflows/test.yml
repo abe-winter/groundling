@@ -13,6 +13,6 @@ jobs:
         pip install -e .
         pip install -r dev-requirements.txt
     - name: lint
-      run: pylint sth
+      run: pylint groundling 
     - name: test
       run: pytest

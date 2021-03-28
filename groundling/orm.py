@@ -37,7 +37,7 @@ def select(con_or_pool, fields, where, fetch='fetchrow', where_literal=(), suffi
   "orm-light: one-line wrapper for selecting a single row"
   # yes dictionary order is guaranteed in 3.7+ https://mail.python.org/pipermail/python-dev/2017-December/151283.html
   args = format_select(fields, where, where_literal, suffix)
-  logging.debug('select %s', args)
+  logging.debug('select %s', args[0])
   return run_query(con_or_pool, fetch, args)
 
 def insert(con_or_pool, table, fields, suffix='', literals=None):
@@ -46,7 +46,7 @@ def insert(con_or_pool, table, fields, suffix='', literals=None):
   subs = ','.join([f'${i + 1}' for i in range(len(fields))] + list(literals.values()))
   all_fields = (*fields, *literals)
   args = (f"insert into {table} ({','.join(all_fields)}) values ({subs}) " + suffix, *fields.values())
-  logging.debug('insert %s', args)
+  logging.debug('insert %s', args[0])
   return run_query(con_or_pool, 'execute', args)
 
 def update(con_or_pool, table, fields, where, literals=None, suffix=None, method='execute'):
@@ -55,5 +55,5 @@ def update(con_or_pool, table, fields, where, literals=None, suffix=None, method
   set_stmts = [render_where_field(i + 1, field) for i, field in enumerate(fields)] + list(literals or ())
   query = f"update {table} set {', '.join(set_stmts)} where {format_whereclause(where, base_index=len(fields))} {suffix or ''}"
   args = (query, *fields.values(), *where.values())
-  logging.debug('update %s %s', method, args)
+  logging.debug('update %s %s', method, args[0])
   return run_query(con_or_pool, method, args)
